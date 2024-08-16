@@ -8,3 +8,7 @@
 /spec/reports/
 /tmp/
 /data/fonts/*.ttf
+/*.gem
+/*.tar.gz
+/*.zip
+/.ruby-version

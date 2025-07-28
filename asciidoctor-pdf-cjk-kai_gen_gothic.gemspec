@@ -11,11 +11,10 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "This is an unofficial extended support of asciidoctor-pdf-cjk-kai_gen_gothic"
   spec.description   = <<-EOF
-Waining:
-This is an unofficial extended support of asciidoctor-pdf-cjk-kai_gen_gothic.
-
-This official gem is no longer maintained.
-Detail information can find on: https://github.com/chloerei/asciidoctor-pdf-cjk-kai_gen_gothic
+Waining:\n
+This is an unofficial extended support of asciidoctor-pdf-cjk-kai_gen_gothic.\n
+This official gem is no longer maintained.\n
+Detail information can find on: https://github.com/chloerei/asciidoctor-pdf-cjk-kai_gen_gothic \n
 I won't make any changes to the font, just make sure it keeps downloading.
 
   EOF

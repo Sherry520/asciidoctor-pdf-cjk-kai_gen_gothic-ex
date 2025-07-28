@@ -20,7 +20,7 @@ I won't make any changes to the font, just make sure it keeps downloading.
   EOF
 
   spec.license       = 'MIT'
-  spec.homepage      = "https://github.com/Sherry520/asciidoctor-pdf-cjk-kai_gen_gothic"
+  spec.homepage      = "https://github.com/Sherry520/asciidoctor-pdf-cjk-kai_gen_gothic-ex"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"

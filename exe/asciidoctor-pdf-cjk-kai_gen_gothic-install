@@ -1,39 +1,92 @@
 #!/usr/bin/env ruby
 
 require 'open-uri'
+require 'digest'
 
 FontsDir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'fonts'))
 
-Fonts = %w(
-  KaiGenGothicCN-Bold-Italic.ttf
-  KaiGenGothicCN-Bold.ttf
-  KaiGenGothicCN-Regular-Italic.ttf
-  KaiGenGothicCN-Regular.ttf
-  KaiGenGothicJP-Bold-Italic.ttf
-  KaiGenGothicJP-Bold.ttf
-  KaiGenGothicJP-Regular-Italic.ttf
-  KaiGenGothicJP-Regular.ttf
-  KaiGenGothicKR-Bold-Italic.ttf
-  KaiGenGothicKR-Bold.ttf
-  KaiGenGothicKR-Regular-Italic.ttf
-  KaiGenGothicKR-Regular.ttf
-  KaiGenGothicTW-Bold-Italic.ttf
-  KaiGenGothicTW-Bold.ttf
-  KaiGenGothicTW-Regular-Italic.ttf
-  KaiGenGothicTW-Regular.ttf
-  RobotoMono-Bold.ttf
-  RobotoMono-BoldItalic.ttf
-  RobotoMono-Italic.ttf
-  RobotoMono-Regular.ttf
-)
+# 基于您提供的MD5哈希值创建验证字典
+EXPECTED_MD5 = {
+  "KaiGenGothicCN-Bold-Italic.ttf" => "131053dc1e9b83c04a1604e9b8fbd2ff",
+  "KaiGenGothicCN-Bold.ttf" => "151442028333ac1fe314eed4c5fdb39a",
+  "KaiGenGothicCN-Regular-Italic.ttf" => "9747163e814b7b6301e32b3838a0f8c8",
+  "KaiGenGothicCN-Regular.ttf" => "1dbdd22db9a1748e38e31698a5d9130a",
+  "KaiGenGothicJP-Bold-Italic.ttf" => "527bad63e68f4765933241949d760bd7",
+  "KaiGenGothicJP-Bold.ttf" => "65b2313bd3e3ff54ded1c5875245b8e3",
+  "KaiGenGothicJP-Regular-Italic.ttf" => "2aea70e601c0304f1337319b63b06b7a",
+  "KaiGenGothicJP-Regular.ttf" => "a623c6aaf9ba3c992ecd10698586da62",
+  "KaiGenGothicKR-Bold-Italic.ttf" => "0925acc5853dfdaf159354bbdd46493a",
+  "KaiGenGothicKR-Bold.ttf" => "39c1ae7c668f51937b13440ae05c7e70",
+  "KaiGenGothicKR-Regular-Italic.ttf" => "a7418126a2cc19cc1ddf4b5c03b9f27a",
+  "KaiGenGothicKR-Regular.ttf" => "47062f8b1d927f9139367e1df73d350e",
+  "KaiGenGothicTW-Bold-Italic.ttf" => "706bfa89d333143752f51f32cd6dd8d2",
+  "KaiGenGothicTW-Bold.ttf" => "46fa9f0c5d5abb4efc8236fd815a014e",
+  "KaiGenGothicTW-Regular-Italic.ttf" => "f2dcad1b40b558651471c501966282a8",
+  "KaiGenGothicTW-Regular.ttf" => "8ade1d2d6bd461cbff817f4dbcecdd05",
+  "RobotoMono-Bold.ttf" => "cf661842dcc7e1cc63147893ea8f47e8",
+  "RobotoMono-BoldItalic.ttf" => "28c34883fca976c0d408c1a0a8596ece",
+  "RobotoMono-Italic.ttf" => "7b4c715c7e2b43e8f001c601f4fecbb0",
+  "RobotoMono-Regular.ttf" => "e2642a6882ef2432ee9ac442691a4384"
+}
+
+Fonts = EXPECTED_MD5.keys  # 直接从哈希表获取字体列表
+
+# 确保字体目录存在
+Dir.mkdir(FontsDir) unless Dir.exist?(FontsDir)
+
+success = true
+failed_files = []
 
 Dir.chdir(FontsDir) do
   Fonts.each_with_index do |name, index|
-    puts "[#{index + 1}/#{Fonts.count}] Downloading #{name}"
-    File.open(name, 'wb') do |file|
-      file.write URI.open("https://github.com/chloerei/asciidoctor-pdf-cjk-kai_gen_gothic/releases/download/v0.1.0-fonts/#{name}").read
+    # 检查文件是否存在且MD5匹配
+    if File.exist?(name)
+      current_md5 = Digest::MD5.file(name).hexdigest
+      
+      if current_md5 == EXPECTED_MD5[name]
+        puts "[#{index + 1}/#{Fonts.count}] ✓ #{name} (valid and up-to-date)"
+        next
+      else
+        puts "[#{index + 1}/#{Fonts.count}] ! #{name} is invalid (expected: #{EXPECTED_MD5[name]}, actual: #{current_md5})"
+        File.delete(name)
+      end
+    end
+
+    puts "[#{index + 1}/#{Fonts.count}] ↓ Downloading #{name}"
+    
+    begin
+      # 从源下载文件
+      download_url = "https://github.com/chloerei/asciidoctor-pdf-cjk-kai_gen_gothic/releases/download/v0.1.0-fonts/#{name}"
+      content = URI.open(download_url).read
+      
+      # 保存文件
+      File.binwrite(name, content)
+      
+      # 验证下载的文件
+      downloaded_md5 = Digest::MD5.file(name).hexdigest
+      if downloaded_md5 == EXPECTED_MD5[name]
+        puts "   ✓ Verification passed (#{downloaded_md5})"
+      else
+        puts "   ✗ Verification FAILED! Expected #{EXPECTED_MD5[name]}, got #{downloaded_md5}"
+        File.delete(name)
+        failed_files << name
+        success = false
+      end
+    rescue OpenURI::HTTPError, SocketError => e
+      puts "   ☠ Download failed: #{e.message}"
+      failed_files << name
+      success = false
+    rescue => e
+      puts "   ⚠ Unexpected error: #{e.class} - #{e.message}"
+      failed_files << name
+      success = false
     end
   end
 end
 
-puts "Done"
+# 最终结果报告
+puts "\nOperation completed: #{success ? 'SUCCESS' : 'WITH ERRORS'}"
+unless failed_files.empty?
+  puts "Failed to process #{failed_files.size} files:"
+  failed_files.each { |f| puts "  - #{f}" }
+end

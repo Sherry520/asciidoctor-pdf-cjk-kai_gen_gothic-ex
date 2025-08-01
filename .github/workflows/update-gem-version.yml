@@ -1,0 +1,35 @@
+name: Update Gem Version in README
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 0 点自动运行
+  workflow_dispatch:     # 支持手动触发
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 检出代码
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 确保能检测文件变更
+
+      # 2. 获取最新 gem 版本（示例）
+      - name: Fetch latest gem version
+        id: gem-version
+        run: |
+          LATEST_VERSION=$(curl -s https://rubygems.org/api/v1/gems/asciidoctor-pdf-cjk-kai_gen_gothic-ex.json | jq -r .version)
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
+      # 3. 修改 README.md（示例：替换版本号）
+      - name: Update README.md
+        run: |
+          sed -i "s/gem 'asciidoctor-pdf-cjk-kai_gen_gothic-ex', '~> [0-9.]*'/gem 'asciidoctor-pdf-cjk-kai_gen_gothic-ex', '~> ${{ steps.gem-version.outputs.latest_version }}'/" README.md
+
+      # 4. 自动提交变更（仅当 README.md 有变化时）
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update gem version to ${{ steps.gem-version.outputs.latest_version }}"
+          file_pattern: README.md  # 只监控 README.md 的变更
+          branch: main             # 默认是当前分支

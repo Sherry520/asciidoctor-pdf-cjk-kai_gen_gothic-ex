@@ -2,6 +2,7 @@
 
 require 'open-uri'
 require 'digest'
+require 'fileutils'
 
 FontsDir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'fonts'))
 
@@ -29,11 +30,77 @@ EXPECTED_MD5 = {
   "RobotoMono-Regular.ttf" => "e2642a6882ef2432ee9ac442691a4384"
 }
 
-Fonts = EXPECTED_MD5.keys  # 直接从哈希表获取字体列表
+Fonts = EXPECTED_MD5.keys
+
+# 缓存目录设置（支持 GitHub Actions 和本地环境）
+def cache_dir
+  # GitHub Actions 环境
+  if ENV['GITHUB_WORKSPACE']
+    File.join(ENV['GITHUB_WORKSPACE'], '.font_cache')
+  # 本地环境
+  else
+    File.join(Dir.home, '.cache', 'asciidoctor-pdf-cjk-kai_gen_gothic')
+  end
+end
+
+# 确保目录存在
+def ensure_dir_exists(path)
+  FileUtils.mkdir_p(path) unless Dir.exist?(path)
+end
+
+# 恢复缓存
+def restore_cache
+  cache_path = cache_dir
+  return false unless Dir.exist?(cache_path)
+  
+  valid_count = 0
+  Dir.chdir(cache_path) do
+    Fonts.each do |name|
+      next unless File.exist?(name)
+      
+      current_md5 = Digest::MD5.file(name).hexdigest
+      if current_md5 == EXPECTED_MD5[name]
+        target = File.join(FontsDir, name)
+        FileUtils.cp(name, target) unless File.exist?(target) && Digest::MD5.file(target).hexdigest == EXPECTED_MD5[name]
+        valid_count += 1
+      end
+    end
+  end
+  
+  valid_count == Fonts.count
+end
+
+# 更新缓存
+def update_cache
+  cache_path = cache_dir
+  ensure_dir_exists(cache_path)
+  
+  Dir.chdir(FontsDir) do
+    Fonts.each do |name|
+      next unless File.exist?(name)
+      
+      current_md5 = Digest::MD5.file(name).hexdigest
+      if current_md5 == EXPECTED_MD5[name]
+        target = File.join(cache_path, name)
+        FileUtils.cp(name, target) unless File.exist?(target) && Digest::MD5.file(target).hexdigest == EXPECTED_MD5[name]
+      end
+    end
+  end
+end
 
 # 确保字体目录存在
-Dir.mkdir(FontsDir) unless Dir.exist?(FontsDir)
+ensure_dir_exists(FontsDir)
 
+# 尝试恢复缓存
+cache_restored = restore_cache
+
+# 如果缓存恢复成功，直接返回
+if cache_restored
+  puts "✓ All fonts restored from cache"
+  exit 0
+end
+
+# 否则继续下载流程
 success = true
 failed_files = []
 
@@ -42,7 +109,7 @@ Dir.chdir(FontsDir) do
     # 检查文件是否存在且MD5匹配
     if File.exist?(name)
       current_md5 = Digest::MD5.file(name).hexdigest
-      
+
       if current_md5 == EXPECTED_MD5[name]
         puts "[#{index + 1}/#{Fonts.count}] ✓ #{name} (valid and up-to-date)"
         next
@@ -53,15 +120,15 @@ Dir.chdir(FontsDir) do
     end
 
     puts "[#{index + 1}/#{Fonts.count}] ↓ Downloading #{name}"
-    
+
     begin
       # 从源下载文件
       download_url = "https://github.com/chloerei/asciidoctor-pdf-cjk-kai_gen_gothic/releases/download/v0.1.0-fonts/#{name}"
       content = URI.open(download_url).read
-      
+
       # 保存文件
       File.binwrite(name, content)
-      
+
       # 验证下载的文件
       downloaded_md5 = Digest::MD5.file(name).hexdigest
       if downloaded_md5 == EXPECTED_MD5[name]
@@ -84,9 +151,15 @@ Dir.chdir(FontsDir) do
   end
 end
 
+# 如果下载成功，更新缓存
+update_cache if success && failed_files.empty?
+
 # 最终结果报告
 puts "\nOperation completed: #{success ? 'SUCCESS' : 'WITH ERRORS'}"
 unless failed_files.empty?
   puts "Failed to process #{failed_files.size} files:"
   failed_files.each { |f| puts "  - #{f}" }
 end
+
+# 如果有失败文件，返回非零退出码
+exit 1 unless failed_files.empty?

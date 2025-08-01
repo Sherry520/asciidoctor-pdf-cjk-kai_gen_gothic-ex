@@ -3,17 +3,20 @@
 A Asciidoctor PDF theme, using font [KaiGen Gothic](https://github.com/akiratw/kaigen-gothic). Include CN/JP/KR/TW glyphs.
 
 > **Warning**
+>
+> This is an unofficial extended support of asciidoctor-pdf-cjk-kai_gen_gothic.
 > 
-> Sorry, This gem is no longer maintained, I suggest follow the asciidoctor-pdf theme guides to use your local font.
+> This official gem is no longer maintained.
+> Detail information can find on: https://github.com/chloerei/asciidoctor-pdf-cjk-kai_gen_gothic
 > 
-> https://github.com/asciidoctor/asciidoctor-pdf/blob/v1.5.0.beta.7/docs/theming-guide.adoc#custom-fonts
+> I won't make any change to the font, just make sure it can be downloaded.
 
 ## Installation
 
 Add to Gemfile:
 
 ```ruby
-gem 'asciidoctor-pdf-cjk-kai_gen_gothic', '~> 0.1.1'
+gem 'asciidoctor-pdf-cjk-kai_gen_gothic-ex', '~> 0.1.1'
 ```
 
 then execute:
@@ -22,7 +25,7 @@ then execute:
 
 or:
 
-    $ gem install asciidoctor-pdf-cjk-kai_gen_gothic
+    $ gem install asciidoctor-pdf-cjk-kai_gen_gothic-ex
 
 Download fonts:
 
@@ -32,7 +35,7 @@ Download fonts:
 
 Render PDF:
 
-    $ asciidoctor-pdf -r asciidoctor-pdf-cjk-kai_gen_gothic -a pdf-style=THEME doc.asc
+    $ asciidoctor-pdf -r asciidoctor-pdf-cjk-kai_gen_gothic-ex -a pdf-style=THEME doc.asc
 
 Available themes:
 
@@ -52,4 +55,4 @@ Fonts:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/chloerei/asciidoctor-pdf-cjk-kai_gen_gothic.
+Bug reports and pull requests are welcome on GitHub at https://github.com/Sherry520/asciidoctor-pdf-cjk-kai_gen_gothic-ex.

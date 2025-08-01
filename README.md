@@ -16,7 +16,7 @@ A Asciidoctor PDF theme, using font [KaiGen Gothic](https://github.com/akiratw/k
 Add to Gemfile:
 
 ```ruby
-gem 'asciidoctor-pdf-cjk-kai_gen_gothic-ex', '~> 0.1.1'
+gem 'asciidoctor-pdf-cjk-kai_gen_gothic-ex', '~> 0.1.2'
 ```
 
 then execute:

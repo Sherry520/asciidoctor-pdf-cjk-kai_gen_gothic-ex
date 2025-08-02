@@ -22,9 +22,19 @@ I won't make any changes to the font, just make sure it keeps downloading.
   spec.license       = 'MIT'
   spec.homepage      = "https://github.com/Sherry520/asciidoctor-pdf-cjk-kai_gen_gothic-ex"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.bindir        = "exe"  # 明确指定可执行文件目录
+  spec.executables   = ["asciidoctor-pdf-cjk-kai_gen_gothic-install"]  # 显式声明
+  spec.files = Dir[
+    "exe/*",
+    "lib/**/*",
+    "data/**/*",
+    "*.md",
+    "LICENSE*",
+    "*.gemspec"
+  ]
+  # spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  # spec.bindir        = "exe"
+  # spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
   spec.post_install_message = <<-EOF
 

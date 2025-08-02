@@ -1,1 +1,1 @@
-require "asciidoctor/pdf/cjk/kai_gen_gothic"
+require "asciidoctor/pdf/cjk/kai_gen_gothic/ex"

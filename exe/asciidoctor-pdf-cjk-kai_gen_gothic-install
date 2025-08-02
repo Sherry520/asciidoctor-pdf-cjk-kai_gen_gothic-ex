@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+Gem::Specification.find_by_name('asciidoctor-pdf-cjk-kai_gen_gothic-ex') rescue nil
+
 require 'open-uri'
 
 FontsDir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'fonts'))

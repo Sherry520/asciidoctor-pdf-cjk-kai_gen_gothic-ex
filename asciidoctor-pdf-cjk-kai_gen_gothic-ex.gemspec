@@ -53,4 +53,6 @@ Run this command to download required fonts:
   spec.add_development_dependency "bundler", ">= 1.10"
   spec.add_development_dependency "rake", ">= 10.0"
   spec.add_development_dependency "minitest"
+
+  spec.metadata = { "primary_script" => "exe/asciidoctor-pdf-cjk-kai_gen_gothic-install" }
 end

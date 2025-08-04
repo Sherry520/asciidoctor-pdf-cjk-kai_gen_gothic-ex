@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'asciidoctor/pdf/cjk/kai_gen_gothic/version'
+require 'asciidoctor/pdf/cjk/kai_gen_gothic/ex/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "asciidoctor-pdf-cjk-kai_gen_gothic-ex"
-  spec.version       = Asciidoctor::Pdf::CJK::KaiGenGothic::VERSION
+  spec.version       = Asciidoctor::Pdf::CJK::KaiGenGothic::Ex::VERSION
   spec.authors       = ["Yuhang Guo"]
   spec.email         = ["22561797+Sherry520@users.noreply.github.com"]
 
@@ -40,7 +40,9 @@ Run this command to download required fonts:
 
   spec.required_ruby_version = '>= 2.7.0'
   spec.add_dependency "asciidoctor-pdf-cjk", "~> 0.1.2"
-  spec.add_development_dependency "bundler", "~> 1.10"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "minitest"
+  spec.add_dependency 'prawn', '~> 2.2.2'
+  spec.add_dependency 'ttfunk', '~> 1.5.1'
+  spec.add_development_dependency "bundler", "~> 2.0"
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "minitest", "~> 5.0"
 end

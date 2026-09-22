@@ -3,7 +3,7 @@ module Asciidoctor
     module CJK
       module KaiGenGothic
         module Ex
-          VERSION = "0.1.2"
+          VERSION = "0.1.3.alpha.1"
         end
       end
     end

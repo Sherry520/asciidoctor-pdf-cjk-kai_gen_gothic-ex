@@ -1,0 +1,57 @@
+name: Release Pipeline
+
+on:
+  push:
+    tags:
+      - '[0-9]*' # 仅在手动推送形如 v0.2.0 或 0.2.0 的 Tag 时触发
+
+jobs:
+  # 1. 编译校验任务：验证 Gem 能否正常打包
+  build:
+    name: Build & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+
+      - name: Validate Gem Build
+        run: |
+          gem build *.gemspec
+
+  # 2. Release 交付任务：只有 build 成功后才会执行
+  release:
+    name: Create GitHub Release
+    needs: build # 严格依赖 build Job，构建失败则此步骤直接跳过
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # 赋予 Action 在仓库创建 Release 并上传 Asset 的权限
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+
+      - name: Build Gem Package
+        run: |
+          gem build *.gemspec
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            *.gem
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

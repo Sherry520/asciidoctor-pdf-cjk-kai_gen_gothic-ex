@@ -2,7 +2,7 @@
 
 require 'open-uri'
 
-FontsDir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'fonts'))
+FontsDir = File.expand_path('../data/fonts', __dir__)
 
 Fonts = %w(
   KaiGenGothicCN-Bold-Italic.ttf

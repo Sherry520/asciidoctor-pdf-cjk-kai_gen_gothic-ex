@@ -1,7 +1,8 @@
 module Asciidoctor
   module Pdf
     class ThemeLoader
-      DataDir.replace ::File.expand_path(::File.join(::File.dirname(__FILE__), '..', '..', '..', '..', '..', '..', 'data'))
+      gem_root = ::File.expand_path('../../../../../..', __dir__)
+      DataDir.replace ::File.join(gem_root, 'data')
       ThemesDir.replace ::File.join DataDir, 'themes'
       FontsDir.replace ::File.join DataDir, 'fonts'
     end

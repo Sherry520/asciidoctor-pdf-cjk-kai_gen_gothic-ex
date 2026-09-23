@@ -4,7 +4,7 @@ require "asciidoctor/pdf/cjk/kai_gen_gothic/ex/theme_loader.rb"
 
 module Asciidoctor
   module Pdf
-    module CJK
+    module Cjk
       module KaiGenGothic
         module Ex
         end
